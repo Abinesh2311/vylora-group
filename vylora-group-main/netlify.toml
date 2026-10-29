@@ -1,0 +1,25 @@
+# Netlify configuration for a TanStack Start (Nitro) SSR app.
+#
+# Nitro's `netlify` preset produces:
+#   - dist/                         → static client assets (publish dir)
+#   - .netlify/functions-internal/  → SSR function (auto-detected by Netlify)
+#   - dist/_redirects               → catch-all routing the SSR function
+#
+# Netlify picks up the function automatically; no functions = "..." needed.
+
+[build]
+  command = "bun run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Make nitro's preset explicit at build time as well (belt-and-braces with vite.config.ts).
+  NITRO_PRESET = "netlify"
+
+# SPA/SSR fallback — nitro writes its own _redirects, but this is a safety net
+# in case the file is ever missing from the build output.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200
+  force = false
